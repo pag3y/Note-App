@@ -58,3 +58,57 @@ pub fn delete_note(dir: &str, title: &str) -> io::Result<()> { // The function t
     println!("Note '{}' deleted successfully!", title); // Print a success message
     Ok(())
 }
+
+pub fn search_notes_by_title(dir: &str, query: &str) -> io::Result<()> { // The function takes a directory path and a query string as arguments, and returns an io::Result
+    let entries = fs::read_dir(dir)?; // Read the contents of the directory
+
+    println!("Searching for notes with '{}' in the title:", query); // Print a message with the search query
+    let mut found = false; // Initialize a flag to track if any notes are found
+
+    for entry in entries { // Iterate over the directory entries
+        let entry = entry?; // Unwrap the entry
+        if let Some(file_name) = entry.path().file_name() { // Get the file name of the entry
+            if let Some(name) = file_name.to_str() { // Convert the file name to a string
+                if name.contains(query) { // Check if the file name contains the search query
+                    println!("- {}", name); // Print the file name
+                    found = true; // Set the flag to true
+                }
+            }
+        }
+    }
+
+    if !found { 
+        println!("No notes found with '{}' in the title.", query); // Print a message if no notes are found
+    }
+
+    Ok(())
+
+}
+
+pub fn search_notes_by_content(dir: &str, query: &str) -> io::Result<()> { // The function takes a directory path and a query string as arguments, and returns an io::Result
+    let entries = fs::read_dir(dir)?; // Read the contents of the directory
+
+    println!("Searching for notes containing '{}' in the content:", query); // Print a message with the search query
+    let mut found = false; // Initialize a flag to track if any notes are found
+
+    for entry in entries { // Iterate over the directory entries
+        let entry = entry?; // Unwrap the entry
+        if let Some(file_name) = entry.path().file_name() { // Get the file name of the entry
+            if let Some(name) = file_name.to_str() { // Convert the file name to a string
+                let file_path = entry.path(); // Get the file path
+                if let Ok(content) = fs::read_to_string(&file_path) { // Read the content of the file
+                    if content.contains(query) { // Check if the content contains the search query
+                        println!("- {} (contains match)", name); // Print the file name with a match indicator
+                        found = true; // Set the flag to true
+                    }
+                }
+            }
+        }
+    }
+
+    if !found {
+        println!("No notes found containing '{}' in the content.", query); // Print a message if no notes are found
+    }
+
+    Ok(())
+}
