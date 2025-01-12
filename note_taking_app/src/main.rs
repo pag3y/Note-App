@@ -12,6 +12,11 @@ fn main() {
 
     // Example: List all notes
     list_notes(notes_dir).unwrap(); 
+
+    // Example: View a note
+    view_note(notes_dir, "example").unwrap_or_else(|e| { // View the note with the title "example", and handle any errors
+        eprintln!("Error: {}", e); // Print an error message, if any
+    });
 }
 
 // Function to add a new note
@@ -37,4 +42,21 @@ fn list_notes(dir: &str) -> io::Result<()> { // The function takes a directory p
         }
     }
     Ok(())
+}
+
+// Function to view a note's content
+fn view_note(dir: &str, title: &str) -> io::Result<()> { // The function takes a directory path and a title as arguments, and returns an io::Result
+    let file_path = format!("{}/{}.md", dir, title); // Create the file path
+    if !Path::new(&file_path).exists() { // Check if the file exists
+        return Err(io::Error::new( // Return an error if the file does not exist
+            io::ErrorKind::NotFound, // Set the error kind to NotFound
+            format!("Note '{}' does not exist", title), // Set the error message
+        ));
+    }
+
+    let content = fs::read_to_string(file_path)?; // Read the content of the file
+    println!("--- Content of '{}' ---", title); // Print a message with the note title
+    println!("{}", content); // Print the content of the note
+    println!("------------------------"); // Print a separator
+    Ok(()) // Return an Ok result
 }
