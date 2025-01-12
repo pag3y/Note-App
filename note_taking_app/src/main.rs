@@ -17,6 +17,22 @@ fn main() {
     view_note(notes_dir, "example").unwrap_or_else(|e| { // View the note with the title "example", and handle any errors
         eprintln!("Error: {}", e); // Print an error message, if any
     });
+
+    use std::io::{stdin, stdout,Write}; // Import the stdin, stdout, and Write traits from the io module
+    let mut input= String::new(); 
+
+    println!("Enter a note to view:");
+    print!("> ");
+    stdout().flush().unwrap();  // Flush the output buffer to display the prompt
+
+    stdin().read_line(&mut input).unwrap(); // Read the user input from the standard input
+    let note_title = input.trim(); // Remove leading and trailing whitespace from the input
+
+    //Attempt to view the note
+    view_note(&notes_dir, note_title).unwrap_or_else(|e| { // View the note with the specified title, and handle any errors
+        eprintln!("Error: {}", e); // Print an error message, if any
+    });
+
 }
 
 // Function to add a new note
