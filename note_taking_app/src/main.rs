@@ -1,3 +1,4 @@
+use std::fmt::format;
 use std::fs; // Import the fs module, which provides file system operations
 use std::io::{self, Write}; // Import the Write trait, and the io module, which provides input/output functionality
 use std::path::Path; // Import the Path struct, which represents file paths
@@ -32,6 +33,17 @@ fn main() {
     view_note(&notes_dir, note_title).unwrap_or_else(|e| { // View the note with the specified title, and handle any errors
         eprintln!("Error: {}", e); // Print an error message, if any
     });
+
+      // Prompt user for a note to delete
+      println!("Enter the title of the note to delete:"); // Print a message to prompt the user
+      print!("> "); // Print a prompt symbol
+      stdout().flush().unwrap(); // Flush the output buffer to display the prompt
+      input.clear(); // Clear the input buffer
+      stdin().read_line(&mut input).unwrap(); // Read the user input from the standard input
+      let note_title = input.trim(); // Remove leading and trailing whitespace from the input
+      delete_note(notes_dir, note_title).unwrap_or_else(|e| { // Delete the note with the specified title, and handle any errors
+          eprintln!("Error: {}", e); // Print an error message, if any
+      });
 
 }
 
@@ -75,4 +87,18 @@ fn view_note(dir: &str, title: &str) -> io::Result<()> { // The function takes a
     println!("{}", content); // Print the content of the note
     println!("------------------------"); // Print a separator
     Ok(()) // Return an Ok result
+}
+
+fn delete_note(dir: &str, title: &str) -> io::Result<()> { // The function takes a directory path and a title as arguments, and returns an io::Result
+    let file_path = format!("{}/{}.md", dir, title); // Create the file path
+    if !Path::new(&file_path).exists() { // Check if the file exists
+        return Err(io::Error::new( // Return an error if the file does not exist
+            io::ErrorKind::NotFound, // Set the error kind to NotFound
+            format!("Note '{}' does not exist", title), // Set the error message
+        ));
+    }
+
+    fs::remove_file(file_path)?; // Remove the file
+    println!("Note '{}' deleted successfully!", title); // Print a success message
+    Ok(())
 }
