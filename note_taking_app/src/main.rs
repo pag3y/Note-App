@@ -2,7 +2,7 @@ mod notes; // Import the notes module from the notes.rs file
 
 use std::fs; // Import the fs module, which provides file system operations
 
-use notes::{add_note, list_notes, view_note, delete_note}; // Import the add_note, list_notes, view_note, and delete_note functions from the notes module
+use notes::{add_note, list_notes, view_note, search_notes_by_title, search_notes_by_content, delete_note}; // Import the add_note, list_notes, view_note, and delete_note functions from the notes module
 
 fn main() {
     // Ensure the "notes" directory exists.
@@ -35,15 +35,32 @@ fn main() {
         eprintln!("Error: {}", e); // Print an error message, if any
     });
 
-      // Prompt user for a note to delete
-      println!("Enter the title of the note to delete:"); // Print a message to prompt the user
-      print!("> "); // Print a prompt symbol
-      stdout().flush().unwrap(); // Flush the output buffer to display the prompt
-      input.clear(); // Clear the input buffer
-      stdin().read_line(&mut input).unwrap(); // Read the user input from the standard input
-      let note_title = input.trim(); // Remove leading and trailing whitespace from the input
-      delete_note(notes_dir, note_title).unwrap_or_else(|e| { // Delete the note with the specified title, and handle any errors
-          eprintln!("Error: {}", e); // Print an error message, if any
-      });
+    // Prompt user for a note to delete
+    println!("Enter the title of the note to delete:"); // Print a message to prompt the user
+    print!("> "); // Print a prompt symbol
+    stdout().flush().unwrap(); // Flush the output buffer to display the prompt
+    input.clear(); // Clear the input buffer
+    stdin().read_line(&mut input).unwrap(); // Read the user input from the standard input
+    let note_title = input.trim(); // Remove leading and trailing whitespace from the input
+    delete_note(notes_dir, note_title).unwrap_or_else(|e| { // Delete the note with the specified title, and handle any errors
+        eprintln!("Error: {}", e); // Print an error message, if any
+    });
+
+    // Prompt user for search
+    let mut input = String::new();
+    println!("Enter search query for titles:");
+    print!("> ");
+    stdout().flush().unwrap();
+    stdin().read_line(&mut input).unwrap();
+    let title_query = input.trim();
+    search_notes_by_title(notes_dir, title_query).unwrap();
+
+    println!("Enter search query for content:");
+    print!("> ");
+    stdout().flush().unwrap();
+    input.clear();
+    stdin().read_line(&mut input).unwrap();
+    let content_query = input.trim();
+    search_notes_by_content(notes_dir, content_query).unwrap();
 
 }
